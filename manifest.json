@@ -2,22 +2,17 @@
   "name": "ViñedoPro - Gestión de Viñedo",
   "short_name": "ViñedoPro",
   "description": "Sistema de gestión para productores vitivinícolas",
-  "start_url": "./vinedo_gestion.html",
+  "start_url": "/Gesti-n-vi-edo/index.html",
+  "scope": "/Gesti-n-vi-edo/",
   "display": "standalone",
   "background_color": "#3B6D11",
   "theme_color": "#3B6D11",
-  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "/Gesti-n-vi-edo/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ],
-  "categories": [
-    "productivity",
-    "utilities"
-  ],
-  "lang": "es"
+  ]
 }
