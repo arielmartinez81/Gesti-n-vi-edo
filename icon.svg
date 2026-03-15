@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#3B6D11"/>
+  <!-- Grape cluster circles -->
+  <!-- Top row -->
+  <circle cx="256" cy="120" r="38" fill="#C0DD97"/>
+  <!-- Second row -->
+  <circle cx="210" cy="185" r="38" fill="#C0DD97"/>
+  <circle cx="302" cy="185" r="38" fill="#C0DD97"/>
+  <!-- Third row -->
+  <circle cx="164" cy="250" r="38" fill="#97C459"/>
+  <circle cx="256" cy="250" r="38" fill="#97C459"/>
+  <circle cx="348" cy="250" r="38" fill="#97C459"/>
+  <!-- Fourth row -->
+  <circle cx="210" cy="315" r="38" fill="#639922"/>
+  <circle cx="302" cy="315" r="38" fill="#639922"/>
+  <!-- Bottom -->
+  <circle cx="256" cy="380" r="38" fill="#3B6D11" stroke="#639922" stroke-width="4"/>
+  <!-- Stem -->
+  <rect x="244" y="62" width="24" height="50" rx="12" fill="#854F0B"/>
+  <!-- Leaf -->
+  <ellipse cx="290" cy="72" rx="32" ry="20" fill="#639922" transform="rotate(-30 290 72)"/>
+  <line x1="256" y1="70" x2="290" y2="60" stroke="#3B6D11" stroke-width="3"/>
+</svg>

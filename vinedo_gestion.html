@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViñedoPro</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3B6D11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ViñedoPro">
+<link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verde: #3B6D11;
+  --verde-claro: #639922;
+  --verde-palido: #EAF3DE;
+  --amber: #854F0B;
+  --amber-palido: #FAEEDA;
+  --rojo: #A32D2D;
+  --rojo-palido: #FCEBEB;
+  --azul: #185FA5;
+  --azul-palido: #E6F1FB;
+  --tierra: #6B4F2A;
+  --crema: #FAF7F2;
+  --gris-borde: #DDD8CF;
+  --gris-texto: #6B6860;
+  --texto: #1C1A17;
+  --blanco: #FFFFFF;
+  --sombra: 0 2px 12px rgba(59,109,17,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--crema); color: var(--texto); min-height: 100vh; }
+
+.header {
+  background: var(--verde);
+  color: #fff;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+}
+.header-logo { font-family: 'Playfair Display', serif; font-size: 20px; }
+.header-logo span { opacity: 0.6; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 300; margin-left: 8px; }
+.install-btn {
+  margin-left: auto;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+.install-btn:hover { background: rgba(255,255,255,0.3); }
+.install-btn.visible { display: flex; }
+.header-year { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 12px; white-space: nowrap; }
+
+.nav { background: #fff; border-bottom: 1.5px solid var(--gris-borde); display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  padding: 13px 18px;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gris-texto);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-btn:hover { color: var(--verde); background: var(--verde-palido); }
+.nav-btn.active { color: var(--verde); font-weight: 500; border-bottom-color: var(--verde-claro); }
+.nav-icon { font-size: 15px; }
+
+.main { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1.2rem; }
+.section { display: none; animation: fadeIn 0.2s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 1.4rem; }
+.metric-card {
+  background: #fff;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--verde-claro);
+}
+.metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--gris-texto); margin-bottom: 5px; }
+.metric-val { font-size: 24px; font-family: 'Playfair Display', serif; font-weight: 500; color: var(--verde); }
+.metric-sub { font-size: 11px; color: var(--gris-texto); margin-top: 2px; }
+
+.alert { padding: 11px 15px; border-radius: 8px; font-size: 13px; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 10px; }
+.alert-amber { background: var(--amber-palido); color: var(--amber); border: 1px solid #FAC775; }
+.alert-green { background: var(--verde-palido); color: var(--verde); border: 1px solid #C0DD97; }
+
+.card { background: #fff; border: 1.5px solid var(--gris-borde); border-radius: 14px; overflow: hidden; margin-bottom: 1.5rem; box-shadow: var(--sombra); }
+.card-header { padding: 0.9rem 1.3rem; border-bottom: 1px solid var(--gris-borde); display: flex; align-items: center; justify-content: space-between; background: var(--crema); }
+.card-title { font-size: 13px; font-weight: 500; color: var(--texto); }
+.card-body { padding: 1.2rem 1.3rem; }
+
+.form-section { background: #fff; border: 1.5px solid var(--gris-borde); border-radius: 14px; padding: 1.3rem; margin-bottom: 1.5rem; box-shadow: var(--sombra); }
+.form-title { font-family: 'Playfair Display', serif; font-size: 17px; margin-bottom: 1.1rem; color: var(--verde); border-bottom: 1px solid var(--gris-borde); padding-bottom: 9px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-grid1 { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; font-weight: 500; color: var(--gris-texto); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 9px 11px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--texto);
+  background: var(--crema);
+  transition: border-color 0.15s;
+  outline: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--verde-claro); background: #fff; }
+.field textarea { resize: vertical; min-height: 75px; }
+.btn-primary {
+  background: var(--verde); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--verde-claro); }
+.btn-del {
+  background: transparent; border: 1px solid #F09595; color: var(--rojo);
+  padding: 4px 9px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.15s;
+}
+.btn-del:hover { background: var(--rojo-palido); }
+
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 9px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--gris-texto); font-weight: 500; border-bottom: 1.5px solid var(--gris-borde); background: var(--crema); }
+td { padding: 10px 12px; border-bottom: 1px solid #F0EDE8; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #FAFAF7; }
+.empty { text-align: center; color: var(--gris-texto); padding: 2rem; font-size: 13px; font-style: italic; }
+
+.badge { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
+.b-verde { background: var(--verde-palido); color: var(--verde); }
+.b-amber { background: var(--amber-palido); color: var(--amber); }
+.b-rojo { background: var(--rojo-palido); color: var(--rojo); }
+.b-azul { background: var(--azul-palido); color: var(--azul); }
+.b-tierra { background: #F5EDE0; color: var(--tierra); }
+
+.section-header { margin-bottom: 1.3rem; }
+.section-header h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--texto); margin-bottom: 3px; }
+.section-header p { font-size: 13px; color: var(--gris-texto); }
+
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--verde); color: #fff;
+  padding: 11px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transform: translateY(80px);
+  transition: transform 0.3s ease;
+  z-index: 999;
+}
+.toast.show { transform: translateY(0); }
+
+.pwa-banner {
+  background: var(--verde-palido);
+  border: 1px solid #C0DD97;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 1.2rem;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--verde);
+}
+.pwa-banner.visible { display: flex; }
+.pwa-banner button { background: var(--verde); color: #fff; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-family: 'DM Sans',sans-serif; cursor: pointer; white-space: nowrap; }
+
+@media (max-width: 600px) {
+  .form-grid, .form-grid3 { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .header-logo span { display: none; }
+  .main { padding: 1rem 0.8rem; }
+  .header { padding: 0 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🍇 ViñedoPro <span>Gestión de viñedo</span></div>
+  <div class="header-year" id="season-label">Temporada</div>
+  <button class="install-btn" id="install-btn" onclick="installApp()">⬇ Instalar app</button>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('fertilizacion',this)"><span class="nav-icon">🌿</span>Fertilización</button>
+  <button class="nav-btn" onclick="showSection('fenologia',this)"><span class="nav-icon">🌱</span>Fenología</button>
+  <button class="nav-btn" onclick="showSection('plagas',this)"><span class="nav-icon">🔍</span>Plagas</button>
+  <button class="nav-btn" onclick="showSection('labores',this)"><span class="nav-icon">🔧</span>Labores</button>
+  <button class="nav-btn" onclick="showSection('cosecha',this)"><span class="nav-icon">🍇</span>Cosecha</button>
+  <button class="nav-btn" onclick="showSection('resumen',this)"><span class="nav-icon">📊</span>Resumen</button>
+</nav>
+
+<div class="toast" id="toast">✓ Guardado</div>
+
+<div class="main">
+
+<!-- PWA Install Banner -->
+<div class="pwa-banner" id="pwa-banner">
+  <span>📲 Instalá ViñedoPro como app en tu dispositivo para usarla sin internet.</span>
+  <button onclick="installApp()">Instalar</button>
+  <button onclick="document.getElementById('pwa-banner').classList.remove('visible')" style="background:transparent;color:var(--verde);border:1px solid #C0DD97;">✕</button>
+</div>
+
+<!-- FERTILIZACIÓN -->
+<div id="fertilizacion" class="section active">
+  <div class="section-header">
+    <h2>Programa de Fertilización</h2>
+    <p>Registrá y programá todas las aplicaciones de fertilizantes por sector</p>
+  </div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-label">Registros</div><div class="metric-val" id="fm-total">0</div></div>
+    <div class="metric-card"><div class="metric-label">Kg totales aplicados</div><div class="metric-val" id="fm-kg">0</div><div class="metric-sub">todos los cuarteles</div></div>
+    <div class="metric-card"><div class="metric-label">Programados</div><div class="metric-val" id="fm-prog">0</div><div class="metric-sub">pendientes</div></div>
+    <div class="metric-card"><div class="metric-label">Próxima</div><div class="metric-val" id="fm-prox" style="font-size:13px;margin-top:6px;">—</div></div>
+  </div>
+  <div id="fert-alert-div" style="display:none" class="alert alert-amber">⚠️ Tenés <strong id="fert-alert-n">0</strong> aplicación(es) programada(s) para los próximos 7 días.</div>
+  <div class="form-section">
+    <div class="form-title">Agregar aplicación</div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha</label><input type="date" id="f-fecha"></div>
+      <div class="field"><label>Sector / Cuartel</label><input type="text" id="f-sector" placeholder="ej. Cuartel Norte"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Producto</label><input type="text" id="f-producto" placeholder="ej. Urea, NPK 15-15-15"></div>
+      <div class="field"><label>Tipo</label>
+        <select id="f-tipo"><option>Nitrogenado</option><option>Fosfatado</option><option>Potásico</option><option>Complejo NPK</option><option>Foliar</option><option>Orgánico / Compost</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="form-grid3">
+      <div class="field"><label>Dosis (kg/ha)</label><input type="number" id="f-dosis" placeholder="0" min="0" step="0.1"></div>
+      <div class="field"><label>Hectáreas</label><input type="number" id="f-ha" placeholder="0" min="0" step="0.1"></div>
+      <div class="field"><label>Estado</label><select id="f-estado"><option>Programado</option><option>Aplicado</option></select></div>
+    </div>
+    <div class="form-grid1"><div class="field"><label>Observaciones</label><textarea id="f-obs" placeholder="Método de aplicación, condiciones, notas..."></textarea></div></div>
+    <button class="btn-primary" onclick="addFert()">+ Agregar aplicación</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Historial de aplicaciones</span></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Fecha</th><th>Sector</th><th>Producto</th><th>Tipo</th><th>kg/ha</th><th>Ha</th><th>Total kg</th><th>Estado</th><th>Obs</th><th></th></tr></thead>
+      <tbody id="fert-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- FENOLOGÍA -->
+<div id="fenologia" class="section">
+  <div class="section-header"><h2>Seguimiento Fenológico</h2><p>Registrá las etapas del ciclo vegetativo por variedad y sector</p></div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-label">Etapas</div><div class="metric-val" id="fen-total">0</div></div>
+    <div class="metric-card"><div class="metric-label">Última etapa</div><div class="metric-val" id="fen-ult" style="font-size:13px;margin-top:6px;">—</div></div>
+    <div class="metric-card"><div class="metric-label">Variedades</div><div class="metric-val" id="fen-vars">0</div></div>
+    <div class="metric-card"><div class="metric-label">Sectores</div><div class="metric-val" id="fen-sects">0</div></div>
+  </div>
+  <div class="form-section">
+    <div class="form-title">Registrar etapa</div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha</label><input type="date" id="fen-fecha"></div>
+      <div class="field"><label>Etapa fenológica</label>
+        <select id="fen-etapa"><option>Lloro</option><option>Brotación</option><option>Desarrollo de brotes</option><option>Floración</option><option>Cuaje</option><option>Crecimiento de bayas</option><option>Envero</option><option>Maduración</option><option>Cosecha</option><option>Post-cosecha</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Variedad</label><input type="text" id="fen-variedad" placeholder="ej. Malbec, Torrontés, Criolla"></div>
+      <div class="field"><label>Sector</label><input type="text" id="fen-sector" placeholder="ej. Viña Norte, Parral Oeste"></div>
+    </div>
+    <div class="form-grid3">
+      <div class="field"><label>Temp. máx (°C)</label><input type="number" id="fen-tmax" placeholder="ej. 32"></div>
+      <div class="field"><label>Temp. mín (°C)</label><input type="number" id="fen-tmin" placeholder="ej. 14"></div>
+      <div class="field"><label>Humedad (%)</label><input type="number" id="fen-hr" placeholder="ej. 60"></div>
+    </div>
+    <div class="form-grid1"><div class="field"><label>Observaciones</label><textarea id="fen-obs" placeholder="Condiciones, notas de campo..."></textarea></div></div>
+    <button class="btn-primary" onclick="addFen()">+ Registrar etapa</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Registro fenológico</span></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Fecha</th><th>Etapa</th><th>Variedad</th><th>Sector</th><th>T°máx</th><th>T°mín</th><th>HR%</th><th>Observaciones</th><th></th></tr></thead>
+      <tbody id="fen-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- PLAGAS -->
+<div id="plagas" class="section">
+  <div class="section-header"><h2>Control de Plagas y Enfermedades</h2><p>Monitoreá y registrá tratamientos fitosanitarios</p></div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-label">Monitoreos</div><div class="metric-val" id="pl-total">0</div></div>
+    <div class="metric-card"><div class="metric-label">Con tratamiento</div><div class="metric-val" id="pl-trat">0</div></div>
+    <div class="metric-card"><div class="metric-label" style="color:var(--rojo)">Nivel alto</div><div class="metric-val" id="pl-alto" style="color:var(--rojo)">0</div></div>
+    <div class="metric-card"><div class="metric-label">Más frecuente</div><div class="metric-val" id="pl-frec" style="font-size:13px;margin-top:6px;">—</div></div>
+  </div>
+  <div id="plaga-alert-div" style="display:none" class="alert alert-amber">⚠️ <strong id="plaga-alert-n">0</strong> registro(s) con nivel ALTO. Revisá los sectores afectados.</div>
+  <div class="form-section">
+    <div class="form-title">Registrar monitoreo</div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha</label><input type="date" id="pl-fecha"></div>
+      <div class="field"><label>Plaga / Enfermedad</label>
+        <select id="pl-plaga"><option>Oidio</option><option>Mildiu</option><option>Botrytis</option><option>Trips</option><option>Arañuela roja</option><option>Cochylis / Eulia</option><option>Filoxera</option><option>Nematodos</option><option>Clorosis férrica</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Sector afectado</label><input type="text" id="pl-sector" placeholder="ej. Viña Sur"></div>
+      <div class="field"><label>Nivel de daño</label><select id="pl-nivel"><option>Bajo</option><option>Medio</option><option>Alto</option></select></div>
+    </div>
+    <div class="form-grid3">
+      <div class="field"><label>% plantas afectadas</label><input type="number" id="pl-pct" placeholder="0" min="0" max="100"></div>
+      <div class="field"><label>Tratamiento</label><input type="text" id="pl-trat-txt" placeholder="ej. Azufre, Cobre"></div>
+      <div class="field"><label>Dosis (cc o g/ha)</label><input type="number" id="pl-dosis" placeholder="0"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Producto comercial</label><input type="text" id="pl-prod" placeholder="Nombre del producto"></div>
+      <div class="field"><label>Próximo monitoreo</label><input type="date" id="pl-prox"></div>
+    </div>
+    <div class="form-grid1"><div class="field"><label>Observaciones</label><textarea id="pl-obs" placeholder="Condiciones, método, resultados..."></textarea></div></div>
+    <button class="btn-primary" onclick="addPlaga()">+ Registrar monitoreo</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Historial de monitoreos</span></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Fecha</th><th>Plaga</th><th>Sector</th><th>Nivel</th><th>%</th><th>Tratamiento</th><th>Producto</th><th>Próx.</th><th></th></tr></thead>
+      <tbody id="plaga-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- LABORES -->
+<div id="labores" class="section">
+  <div class="section-header"><h2>Registro de Labores Culturales</h2><p>Seguí todas las tareas con costos y personal</p></div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-label">Labores</div><div class="metric-val" id="lb-total">0</div></div>
+    <div class="metric-card"><div class="metric-label">Horas trabajadas</div><div class="metric-val" id="lb-hs">0</div><div class="metric-sub">total temporada</div></div>
+    <div class="metric-card"><div class="metric-label">Costo total</div><div class="metric-val" id="lb-costo" style="font-size:18px;margin-top:4px;">$0</div></div>
+    <div class="metric-card"><div class="metric-label">Última labor</div><div class="metric-val" id="lb-ult" style="font-size:12px;margin-top:6px;">—</div></div>
+  </div>
+  <div class="form-section">
+    <div class="form-title">Agregar labor</div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha</label><input type="date" id="lb-fecha"></div>
+      <div class="field"><label>Tipo de labor</label>
+        <select id="lb-tipo"><option>Poda</option><option>Desbrote</option><option>Atado / Amarre</option><option>Deshoje</option><option>Raleo de racimos</option><option>Cosecha manual</option><option>Riego</option><option>Control de malezas</option><option>Labranza / Rastra</option><option>Aplicación fitosanitaria</option><option>Fertilización</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Sector / Cuartel</label><input type="text" id="lb-sector" placeholder="ej. Parral Este"></div>
+      <div class="field"><label>Personal</label><input type="text" id="lb-personal" placeholder="ej. Juan y María / 4 peones"></div>
+    </div>
+    <div class="form-grid3">
+      <div class="field"><label>Horas trabajadas</label><input type="number" id="lb-hs-in" placeholder="0" min="0" step="0.5"></div>
+      <div class="field"><label>Cantidad personas</label><input type="number" id="lb-personas" placeholder="1" min="1"></div>
+      <div class="field"><label>Costo total ($)</label><input type="number" id="lb-costo-in" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Ha trabajadas</label><input type="number" id="lb-ha" placeholder="0" step="0.1"></div>
+      <div class="field"><label>Herramientas / Insumos</label><input type="text" id="lb-herr" placeholder="ej. Tijeras eléctricas"></div>
+    </div>
+    <div class="form-grid1"><div class="field"><label>Observaciones</label><textarea id="lb-obs" placeholder="Notas, rendimiento, dificultades..."></textarea></div></div>
+    <button class="btn-primary" onclick="addLabor()">+ Agregar labor</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Historial de labores</span></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Fecha</th><th>Labor</th><th>Sector</th><th>Personal</th><th>Pers.</th><th>Horas</th><th>Ha</th><th>Costo $</th><th>Obs</th><th></th></tr></thead>
+      <tbody id="labor-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- COSECHA -->
+<div id="cosecha" class="section">
+  <div class="section-header"><h2>Registro de Cosecha</h2><p>Controlá la vendimia por variedad, sector y °Brix</p></div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-label">Kg totales</div><div class="metric-val" id="cos-kg">0</div></div>
+    <div class="metric-card"><div class="metric-label">°Brix promedio</div><div class="metric-val" id="cos-brix">—</div></div>
+    <div class="metric-card"><div class="metric-label">Variedades</div><div class="metric-val" id="cos-vars">0</div></div>
+    <div class="metric-card"><div class="metric-label">Rendimiento</div><div class="metric-val" id="cos-rend" style="font-size:16px;margin-top:4px;">— kg/ha</div></div>
+  </div>
+  <div class="form-section">
+    <div class="form-title">Registrar cosecha</div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha de vendimia</label><input type="date" id="cos-fecha"></div>
+      <div class="field"><label>Variedad</label><input type="text" id="cos-variedad" placeholder="ej. Malbec, Torrontés, Criolla"></div>
+    </div>
+    <div class="form-grid3">
+      <div class="field"><label>Sector</label><input type="text" id="cos-sector" placeholder="ej. Viña Norte"></div>
+      <div class="field"><label>Kg cosechados</label><input type="number" id="cos-kgs" placeholder="0" min="0"></div>
+      <div class="field"><label>Hectáreas</label><input type="number" id="cos-ha" placeholder="0" step="0.1" min="0"></div>
+    </div>
+    <div class="form-grid3">
+      <div class="field"><label>°Brix</label><input type="number" id="cos-brixv" placeholder="ej. 22.5" step="0.1"></div>
+      <div class="field"><label>pH</label><input type="number" id="cos-ph" placeholder="ej. 3.4" step="0.01"></div>
+      <div class="field"><label>Acidez (g/L)</label><input type="number" id="cos-acid" placeholder="ej. 6.5" step="0.1"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Destino</label><select id="cos-destino"><option>Bodega propia</option><option>Venta a terceros</option><option>Cooperativa</option><option>Consumo propio</option><option>Otro</option></select></div>
+      <div class="field"><label>Precio por kg ($)</label><input type="number" id="cos-precio" placeholder="0" step="0.01"></div>
+    </div>
+    <div class="form-grid1"><div class="field"><label>Observaciones</label><textarea id="cos-obs" placeholder="Estado sanitario, condiciones, equipamiento..."></textarea></div></div>
+    <button class="btn-primary" onclick="addCosecha()">+ Registrar cosecha</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Historial de cosecha</span></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Fecha</th><th>Variedad</th><th>Sector</th><th>Kg</th><th>Ha</th><th>Kg/Ha</th><th>°Brix</th><th>pH</th><th>Destino</th><th>Total $</th><th></th></tr></thead>
+      <tbody id="cos-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- RESUMEN -->
+<div id="resumen" class="section">
+  <div class="section-header"><h2>Resumen de Temporada</h2><p>Panorama completo de la gestión del viñedo</p></div>
+  <div id="resumen-content"></div>
+</div>
+
+</div>
+
+<script>
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-btn').classList.add('visible');
+  document.getElementById('pwa-banner').classList.add('visible');
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-btn').classList.remove('visible');
+  document.getElementById('pwa-banner').classList.remove('visible');
+  deferredPrompt = null;
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(r => {
+      deferredPrompt = null;
+      document.getElementById('install-btn').classList.remove('visible');
+      document.getElementById('pwa-banner').classList.remove('visible');
+    });
+  } else {
+    alert('Para instalar:\n• Chrome/Edge: menú ⋮ → "Instalar aplicación"\n• Safari (iOS): compartir → "Agregar a pantalla de inicio"');
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW:', e));
+}
+
+let data = { fert:[], fen:[], plagas:[], labores:[], cosecha:[] };
+
+function save() {
+  localStorage.setItem('vinedopro_data', JSON.stringify(data));
+  showToast();
+}
+function load() {
+  const d = localStorage.getItem('vinedopro_data');
+  if (d) { data = JSON.parse(d); renderFert(); renderFen(); renderPlagas(); renderLabores(); renderCosecha(); }
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'resumen') renderResumen();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const p = d.split('-');
+  return p[2]+'/'+p[1]+'/'+p[0];
+}
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function truncate(s, n=28) { return s && s.length > n ? s.substring(0,n)+'…' : (s||'—'); }
+
+window.onload = function() {
+  const today = todayStr();
+  document.querySelectorAll('input[type="date"]').forEach(el => el.value = today);
+  const y = new Date().getFullYear(), m = new Date().getMonth();
+  document.getElementById('season-label').textContent = 'Temporada ' + (m >= 7 ? y+'-'+(y+1) : (y-1)+'-'+y);
+  load();
+};
+
+// FERTILIZACIÓN
+function addFert() {
+  const fecha = document.getElementById('f-fecha').value;
+  const producto = document.getElementById('f-producto').value.trim();
+  if (!fecha || !producto) { alert('Completá fecha y producto.'); return; }
+  data.fert.push({ fecha, sector:document.getElementById('f-sector').value.trim(), producto, tipo:document.getElementById('f-tipo').value, dosis:parseFloat(document.getElementById('f-dosis').value)||0, ha:parseFloat(document.getElementById('f-ha').value)||0, estado:document.getElementById('f-estado').value, obs:document.getElementById('f-obs').value.trim() });
+  ['f-producto','f-sector','f-dosis','f-ha','f-obs'].forEach(id=>document.getElementById(id).value='');
+  save(); renderFert();
+}
+function delFert(i) { if(confirm('¿Borrar?')) { data.fert.splice(i,1); save(); renderFert(); } }
+function renderFert() {
+  const d = data.fert;
+  document.getElementById('fm-total').textContent = d.length;
+  document.getElementById('fm-kg').textContent = Math.round(d.reduce((a,f)=>a+(f.dosis*f.ha),0)).toLocaleString('es-AR');
+  const prog = d.filter(f=>f.estado==='Programado');
+  document.getElementById('fm-prog').textContent = prog.length;
+  const prox = prog.sort((a,b)=>a.fecha.localeCompare(b.fecha))[0];
+  document.getElementById('fm-prox').textContent = prox ? fmtDate(prox.fecha)+' — '+prox.producto : '—';
+  const today=new Date(), in7=new Date(); in7.setDate(today.getDate()+7);
+  const p7 = prog.filter(f=>{const fd=new Date(f.fecha);return fd>=today&&fd<=in7;});
+  document.getElementById('fert-alert-div').style.display = p7.length?'flex':'none';
+  if(p7.length) document.getElementById('fert-alert-n').textContent=p7.length;
+  const tbody = document.getElementById('fert-tbody');
+  if(!d.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No hay aplicaciones. ¡Agregá la primera!</td></tr>';return;}
+  tbody.innerHTML=d.map((f,i)=>`<tr><td>${fmtDate(f.fecha)}</td><td>${f.sector||'—'}</td><td><strong style="font-weight:500">${f.producto}</strong></td><td><span class="badge b-verde">${f.tipo}</span></td><td>${f.dosis}</td><td>${f.ha}</td><td><strong style="font-weight:500">${Math.round(f.dosis*f.ha).toLocaleString('es-AR')} kg</strong></td><td><span class="badge ${f.estado==='Aplicado'?'b-verde':'b-amber'}">${f.estado}</span></td><td title="${f.obs||''}">${truncate(f.obs)}</td><td><button class="btn-del" onclick="delFert(${i})">✕</button></td></tr>`).join('');
+}
+
+// FENOLOGÍA
+function addFen() {
+  if(!document.getElementById('fen-fecha').value){alert('Completá la fecha.');return;}
+  data.fen.push({fecha:document.getElementById('fen-fecha').value,etapa:document.getElementById('fen-etapa').value,variedad:document.getElementById('fen-variedad').value.trim(),sector:document.getElementById('fen-sector').value.trim(),tmax:document.getElementById('fen-tmax').value,tmin:document.getElementById('fen-tmin').value,hr:document.getElementById('fen-hr').value,obs:document.getElementById('fen-obs').value.trim()});
+  ['fen-variedad','fen-sector','fen-tmax','fen-tmin','fen-hr','fen-obs'].forEach(id=>document.getElementById(id).value='');
+  save(); renderFen();
+}
+function delFen(i){if(confirm('¿Borrar?')){data.fen.splice(i,1);save();renderFen();}}
+function renderFen(){
+  const d=data.fen;
+  document.getElementById('fen-total').textContent=d.length;
+  document.getElementById('fen-ult').textContent=d.length?d[d.length-1].etapa:'—';
+  document.getElementById('fen-vars').textContent=new Set(d.filter(f=>f.variedad).map(f=>f.variedad)).size;
+  document.getElementById('fen-sects').textContent=new Set(d.filter(f=>f.sector).map(f=>f.sector)).size;
+  const tbody=document.getElementById('fen-tbody');
+  if(!d.length){tbody.innerHTML='<tr><td colspan="9" class="empty">Sin registros fenológicos.</td></tr>';return;}
+  tbody.innerHTML=d.map((f,i)=>`<tr><td>${fmtDate(f.fecha)}</td><td><span class="badge b-verde">${f.etapa}</span></td><td>${f.variedad||'—'}</td><td>${f.sector||'—'}</td><td>${f.tmax?f.tmax+'°C':'—'}</td><td>${f.tmin?f.tmin+'°C':'—'}</td><td>${f.hr?f.hr+'%':'—'}</td><td title="${f.obs||''}">${truncate(f.obs)}</td><td><button class="btn-del" onclick="delFen(${i})">✕</button></td></tr>`).join('');
+}
+
+// PLAGAS
+function addPlaga(){
+  if(!document.getElementById('pl-fecha').value){alert('Completá la fecha.');return;}
+  data.plagas.push({fecha:document.getElementById('pl-fecha').value,plaga:document.getElementById('pl-plaga').value,sector:document.getElementById('pl-sector').value.trim(),nivel:document.getElementById('pl-nivel').value,pct:document.getElementById('pl-pct').value,trat:document.getElementById('pl-trat-txt').value.trim(),dosis:document.getElementById('pl-dosis').value,prod:document.getElementById('pl-prod').value.trim(),prox:document.getElementById('pl-prox').value,obs:document.getElementById('pl-obs').value.trim()});
+  ['pl-sector','pl-pct','pl-trat-txt','pl-dosis','pl-prod','pl-obs'].forEach(id=>document.getElementById(id).value='');
+  save(); renderPlagas();
+}
+function delPlaga(i){if(confirm('¿Borrar?')){data.plagas.splice(i,1);save();renderPlagas();}}
+function renderPlagas(){
+  const d=data.plagas;
+  document.getElementById('pl-total').textContent=d.length;
+  document.getElementById('pl-trat').textContent=d.filter(f=>f.trat).length;
+  const altos=d.filter(f=>f.nivel==='Alto').length;
+  document.getElementById('pl-alto').textContent=altos;
+  document.getElementById('plaga-alert-div').style.display=altos?'flex':'none';
+  if(altos) document.getElementById('plaga-alert-n').textContent=altos;
+  if(d.length){const freq={};d.forEach(f=>freq[f.plaga]=(freq[f.plaga]||0)+1);const top=Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];document.getElementById('pl-frec').textContent=top?top[0]:'—';}
+  const tbody=document.getElementById('plaga-tbody');
+  if(!d.length){tbody.innerHTML='<tr><td colspan="9" class="empty">Sin registros de monitoreo.</td></tr>';return;}
+  tbody.innerHTML=d.map((f,i)=>`<tr><td>${fmtDate(f.fecha)}</td><td>${f.plaga}</td><td>${f.sector||'—'}</td><td><span class="badge ${f.nivel==='Alto'?'b-rojo':f.nivel==='Medio'?'b-amber':'b-verde'}">${f.nivel}</span></td><td>${f.pct?f.pct+'%':'—'}</td><td>${f.trat||'—'}</td><td>${f.prod||'—'}</td><td>${f.prox?fmtDate(f.prox):'—'}</td><td><button class="btn-del" onclick="delPlaga(${i})">✕</button></td></tr>`).join('');
+}
+
+// LABORES
+function addLabor(){
+  if(!document.getElementById('lb-fecha').value){alert('Completá la fecha.');return;}
+  data.labores.push({fecha:document.getElementById('lb-fecha').value,tipo:document.getElementById('lb-tipo').value,sector:document.getElementById('lb-sector').value.trim(),personal:document.getElementById('lb-personal').value.trim(),personas:parseInt(document.getElementById('lb-personas').value)||1,hs:parseFloat(document.getElementById('lb-hs-in').value)||0,ha:parseFloat(document.getElementById('lb-ha').value)||0,costo:parseFloat(document.getElementById('lb-costo-in').value)||0,herr:document.getElementById('lb-herr').value.trim(),obs:document.getElementById('lb-obs').value.trim()});
+  ['lb-sector','lb-personal','lb-hs-in','lb-ha','lb-costo-in','lb-herr','lb-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lb-personas').value='1';
+  save(); renderLabores();
+}
+function delLabor(i){if(confirm('¿Borrar?')){data.labores.splice(i,1);save();renderLabores();}}
+function renderLabores(){
+  const d=data.labores;
+  document.getElementById('lb-total').textContent=d.length;
+  document.getElementById('lb-hs').textContent=d.reduce((a,f)=>a+f.hs,0).toFixed(1);
+  document.getElementById('lb-costo').textContent='$'+d.reduce((a,f)=>a+f.costo,0).toLocaleString('es-AR');
+  const ult=d[d.length-1];
+  document.getElementById('lb-ult').textContent=ult?ult.tipo+' — '+fmtDate(ult.fecha):'—';
+  const tbody=document.getElementById('labor-tbody');
+  if(!d.length){tbody.innerHTML='<tr><td colspan="10" class="empty">Sin labores registradas.</td></tr>';return;}
+  tbody.innerHTML=d.map((f,i)=>`<tr><td>${fmtDate(f.fecha)}</td><td><span class="badge b-azul">${f.tipo}</span></td><td>${f.sector||'—'}</td><td>${f.personal||'—'}</td><td>${f.personas}</td><td>${f.hs} hs</td><td>${f.ha||'—'}</td><td><strong style="font-weight:500">$${f.costo.toLocaleString('es-AR')}</strong></td><td title="${f.obs||''}">${truncate(f.obs,20)}</td><td><button class="btn-del" onclick="delLabor(${i})">✕</button></td></tr>`).join('');
+}
+
+// COSECHA
+function addCosecha(){
+  const fecha=document.getElementById('cos-fecha').value, variedad=document.getElementById('cos-variedad').value.trim();
+  if(!fecha||!variedad){alert('Completá fecha y variedad.');return;}
+  const kg=parseFloat(document.getElementById('cos-kgs').value)||0, ha=parseFloat(document.getElementById('cos-ha').value)||0, precio=parseFloat(document.getElementById('cos-precio').value)||0;
+  data.cosecha.push({fecha,variedad,sector:document.getElementById('cos-sector').value.trim(),kg,ha,brix:parseFloat(document.getElementById('cos-brixv').value)||0,ph:document.getElementById('cos-ph').value,acid:document.getElementById('cos-acid').value,destino:document.getElementById('cos-destino').value,precio,total:kg*precio,obs:document.getElementById('cos-obs').value.trim()});
+  ['cos-variedad','cos-sector','cos-kgs','cos-ha','cos-brixv','cos-ph','cos-acid','cos-precio','cos-obs'].forEach(id=>document.getElementById(id).value='');
+  save(); renderCosecha();
+}
+function delCosecha(i){if(confirm('¿Borrar?')){data.cosecha.splice(i,1);save();renderCosecha();}}
+function renderCosecha(){
+  const d=data.cosecha;
+  const totalKg=d.reduce((a,f)=>a+f.kg,0), totalHa=d.reduce((a,f)=>a+f.ha,0);
+  document.getElementById('cos-kg').textContent=totalKg.toLocaleString('es-AR');
+  const cb=d.filter(f=>f.brix>0), avgBrix=cb.length?cb.reduce((a,f)=>a+f.brix,0)/cb.length:0;
+  document.getElementById('cos-brix').textContent=avgBrix?avgBrix.toFixed(1)+'°':'—';
+  document.getElementById('cos-vars').textContent=new Set(d.map(f=>f.variedad)).size;
+  document.getElementById('cos-rend').textContent=totalHa>0?Math.round(totalKg/totalHa).toLocaleString('es-AR')+' kg/ha':'— kg/ha';
+  const tbody=document.getElementById('cos-tbody');
+  if(!d.length){tbody.innerHTML='<tr><td colspan="11" class="empty">Sin registros de cosecha.</td></tr>';return;}
+  tbody.innerHTML=d.map((f,i)=>`<tr><td>${fmtDate(f.fecha)}</td><td><strong style="font-weight:500">${f.variedad}</strong></td><td>${f.sector||'—'}</td><td>${f.kg.toLocaleString('es-AR')} kg</td><td>${f.ha||'—'}</td><td>${f.ha>0?Math.round(f.kg/f.ha).toLocaleString('es-AR')+' kg/ha':'—'}</td><td>${f.brix>0?'<span class="badge b-amber">'+f.brix.toFixed(1)+'°</span>':'—'}</td><td>${f.ph||'—'}</td><td><span class="badge b-tierra">${f.destino}</span></td><td>${f.total>0?'$'+f.total.toLocaleString('es-AR'):'—'}</td><td><button class="btn-del" onclick="delCosecha(${i})">✕</button></td></tr>`).join('');
+}
+
+// RESUMEN
+function renderResumen(){
+  const totalFertKg=data.fert.reduce((a,f)=>a+(f.dosis*f.ha),0);
+  const totalCosKg=data.cosecha.reduce((a,f)=>a+f.kg,0), totalCosHa=data.cosecha.reduce((a,f)=>a+f.ha,0);
+  const totalVenta=data.cosecha.reduce((a,f)=>a+f.total,0), totalLabCosto=data.labores.reduce((a,f)=>a+f.costo,0);
+  const cb=data.cosecha.filter(f=>f.brix>0), avgBrix=cb.length?(cb.reduce((a,f)=>a+f.brix,0)/cb.length).toFixed(1):'—';
+  const altos=data.plagas.filter(f=>f.nivel==='Alto').length;
+  document.getElementById('resumen-content').innerHTML=`
+  <div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+    <div class="metric-card"><div class="metric-label">Fertilizaciones</div><div class="metric-val">${data.fert.length}</div><div class="metric-sub">${Math.round(totalFertKg).toLocaleString('es-AR')} kg aplicados</div></div>
+    <div class="metric-card"><div class="metric-label">Fenología</div><div class="metric-val">${data.fen.length}</div><div class="metric-sub">${new Set(data.fen.map(f=>f.variedad)).size} variedades</div></div>
+    <div class="metric-card"><div class="metric-label">Monitoreos plagas</div><div class="metric-val">${data.plagas.length}</div><div class="metric-sub">${altos} alerta(s) alta</div></div>
+    <div class="metric-card"><div class="metric-label">Labores</div><div class="metric-val">${data.labores.length}</div><div class="metric-sub">$${totalLabCosto.toLocaleString('es-AR')} costo total</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Resultado de cosecha</span></div>
+    <div class="card-body">
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Kg totales</div><div class="metric-val">${totalCosKg.toLocaleString('es-AR')}</div></div>
+        <div class="metric-card"><div class="metric-label">Ha cosechadas</div><div class="metric-val">${totalCosHa.toFixed(1)}</div></div>
+        <div class="metric-card"><div class="metric-label">Rendimiento</div><div class="metric-val">${totalCosHa>0?Math.round(totalCosKg/totalCosHa).toLocaleString('es-AR'):'—'}<span style="font-size:13px"> kg/ha</span></div></div>
+        <div class="metric-card"><div class="metric-label">°Brix prom.</div><div class="metric-val">${avgBrix}${avgBrix!=='—'?'°':''}</div></div>
+        <div class="metric-card"><div class="metric-label">Ingreso vendimia</div><div class="metric-val" style="font-size:16px">$${totalVenta.toLocaleString('es-AR')}</div></div>
+      </div>
+      ${data.cosecha.length?`<table style="margin-top:1rem"><thead><tr><th>Variedad</th><th>Kg</th><th>Ha</th><th>Kg/Ha</th><th>°Brix</th><th>Destino</th><th>Ingreso $</th></tr></thead><tbody>${[...new Set(data.cosecha.map(f=>f.variedad))].map(v=>{const rows=data.cosecha.filter(f=>f.variedad===v);const kg=rows.reduce((a,f)=>a+f.kg,0),ha=rows.reduce((a,f)=>a+f.ha,0),br=rows.filter(f=>f.brix>0),bx=br.length?(br.reduce((a,f)=>a+f.brix,0)/br.length).toFixed(1)+'°':'—',inc=rows.reduce((a,f)=>a+f.total,0);return`<tr><td><strong style="font-weight:500">${v}</strong></td><td>${kg.toLocaleString('es-AR')} kg</td><td>${ha.toFixed(1)}</td><td>${ha>0?Math.round(kg/ha).toLocaleString('es-AR')+' kg/ha':'—'}</td><td>${bx}</td><td>${rows[0].destino}</td><td>${inc>0?'$'+inc.toLocaleString('es-AR'):'—'}</td></tr>`;}).join('')}</tbody></table>`:'<p style="color:var(--gris-texto);font-size:13px;padding:1rem 0">Sin registros de cosecha aún.</p>'}
+    </div>
+  </div>
+  <div style="margin-top:1rem;padding:1.2rem;background:var(--verde-palido);border-radius:10px;border:1px solid #C0DD97">
+    <p style="font-size:13px;font-weight:500;color:var(--verde)">💾 Datos guardados localmente en este dispositivo</p>
+    <p style="font-size:12px;color:var(--gris-texto);margin-top:4px">Tus registros se guardan automáticamente. Exportalos para tener un backup seguro.</p>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button onclick="exportarDatos()" style="background:var(--verde);color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Exportar JSON</button>
+      <button onclick="importarDatos()" style="background:transparent;color:var(--verde);border:1px solid #C0DD97;padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">⬆ Importar backup</button>
+      <button onclick="if(confirm('¿Borrar TODOS los datos? No se puede deshacer.')){localStorage.removeItem(\"vinedopro_data\");data={fert:[],fen:[],plagas:[],labores:[],cosecha:[]};renderFert();renderFen();renderPlagas();renderLabores();renderCosecha();renderResumen();}" style="background:transparent;color:var(--rojo);border:1px solid #F09595;padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">🗑 Borrar todo</button>
+    </div>
+  </div>`;
+}
+
+function exportarDatos(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download='vinedopro_backup_'+todayStr()+'.json'; a.click();
+}
+
+function importarDatos(){
+  const input=document.createElement('input');
+  input.type='file'; input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try {
+        const imported=JSON.parse(ev.target.result);
+        if(imported.fert!==undefined){
+          data=imported;
+          localStorage.setItem('vinedopro_data',JSON.stringify(data));
+          renderFert();renderFen();renderPlagas();renderLabores();renderCosecha();renderResumen();
+          alert('✓ Datos importados correctamente.');
+        } else { alert('Archivo inválido.'); }
+      } catch(err){ alert('Error al leer el archivo.'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+</script>
+</body>
+</html>
