@@ -1,5 +1,10 @@
 const CACHE = 'vinedopro-v1';
-const FILES = ['./vinedo_gestion.html', './manifest.json', './icon.svg'];
+const FILES = [
+  '/Gesti-n-vi-edo/',
+  '/Gesti-n-vi-edo/index.html',
+  '/Gesti-n-vi-edo/manifest.json',
+  '/Gesti-n-vi-edo/icon.svg'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -15,6 +20,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./vinedo_gestion.html')))
+    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/Gesti-n-vi-edo/index.html')))
   );
 });
